@@ -69,6 +69,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-  return MaterialApp()
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Contoh Stateless Widget'),
+          backgroundColor: Colors.blue,
+        ),
+        body: const Center(
+          child: Text(
+            'Halo, saya Stateless Widget!',
+            style: TextStyle(fontSize: 20),
+          ),
+        ),
+      ),
+    );
   }
 }
