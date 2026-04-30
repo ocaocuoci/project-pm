@@ -34,7 +34,7 @@ class _CameraPageState extends State<CameraPage> {
   late CameraController controller;
   bool isCameraReady = false;
 
-  // 📍 koordinat (contoh: Sidoarjo)
+  // koordinat (contoh: Sidoarjo)
   final LatLng lokasi = LatLng(-7.4478, 112.7183);
 
   @override
@@ -80,13 +80,13 @@ class _CameraPageState extends State<CameraPage> {
       body: isCameraReady
           ? Column(
               children: [
-                // 📷 CAMERA
+             
                 Expanded(
                   flex: 2,
                   child: CameraPreview(controller),
                 ),
 
-                // 📍 MAP
+                
                 Expanded(
                   flex: 1,
                   child: FlutterMap(
@@ -117,7 +117,6 @@ class _CameraPageState extends State<CameraPage> {
                   ),
                 ),
 
-                // 📸 BUTTON
                 ElevatedButton(
                   onPressed: takePicture,
                   child: const Text("Ambil Foto"),
