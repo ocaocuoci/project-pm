@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:camera/camera.dart';
 
-void main() {
+late List<CameraDescription> cameras;
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+
+  cameras = await availableCameras();
+
   runApp(const MyApp());
 }
 
@@ -11,44 +18,78 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: MyHomePage(),
+      home: CameraPage(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+class CameraPage extends StatefulWidget {
+  const CameraPage({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<CameraPage> createState() => _CameraPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  final ImagePicker _picker = ImagePicker();
+class _CameraPageState extends State<CameraPage> {
+  late CameraController controller;
+  bool isCameraReady = false;
 
-  Future<void> ambilFoto() async {
-    final XFile? image =
-        await _picker.pickImage(source: ImageSource.camera);
+  @override
+  void initState() {
+    super.initState();
+    initCamera();
+  }
 
-    if (image != null) {
-      print("Foto diambil: ${image.path}");
-    } else {
-      print("Tidak ada foto");
-    }
+  Future<void> initCamera() async {
+    controller = CameraController(
+      cameras[0], // kamera belakang
+      ResolutionPreset.medium,
+    );
+
+    await controller.initialize();
+
+    if (!mounted) return;
+
+    setState(() {
+      isCameraReady = true;
+    });
+  }
+
+  Future<void> takePicture() async {
+    if (!controller.value.isInitialized) return;
+
+    final image = await controller.takePicture();
+
+    print("Foto tersimpan di: ${image.path}");
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Camera Test"),
+        title: const Text("Camera Advance"),
       ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: ambilFoto,
-          child: const Text("Ambil Foto"),
-        ),
-      ),
+      body: isCameraReady
+          ? Column(
+              children: [
+                Expanded(
+                  child: CameraPreview(controller),
+                ),
+                ElevatedButton(
+                  onPressed: takePicture,
+                  child: const Text("Ambil Foto"),
+                ),
+                const SizedBox(height: 20),
+              ],
+            )
+          : const Center(child: CircularProgressIndicator()),
     );
   }
 }
